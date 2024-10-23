@@ -34,6 +34,5 @@ chmod +x instalJava.sh instalMVN.sh
    
 3. **Configuración del sistema**: He incluido una sección sobre cómo verificar y ajustar las variables de entorno en Windows, para asegurar que todo esté configurado correctamente.
 
-4. **Formato profesional**: El formato del README sigue las mejores prácticas de la documentación profesional, utilizando encabezados y secciones claras.
 
-Este archivo README proporciona toda la información necesaria para que los usuarios ejecuten correctamente los scripts en cualquier sistema operativo. ¡Espero que te sea útil! Si necesitas algún ajuste adicional, estaré encantado de ayudarte.
+
