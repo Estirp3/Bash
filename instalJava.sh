@@ -7,11 +7,10 @@ check_java_installed(){
         java -version
         return 0
     else
-        echo "Java no esta instalado."
+        echo "Java no está instalado."
         return 1
     fi
 }
-
 
 # Función para solicitar la ruta del instalador de Java
 requestJavaInstallerPath (){
@@ -31,7 +30,6 @@ requestJavaInstallerPath (){
             else
                 echo "No se puede determinar el sistema operativo. Abre manualmente la página de descarga."
             fi
-
             exit 0
         else
             echo "No se ha descargado el archivo. Saliendo..."
@@ -42,13 +40,36 @@ requestJavaInstallerPath (){
     fi
 }
 
+# Función para configurar las variables de entorno
+configure_environment() {
+    echo "Configurando las variables de entorno..."
+    if [[ "$OSTYPE" == "linux-gnu"* || "$OSTYPE" == "darwin"* ]]; then
+        # Para Linux y macOS
+        JAVA_HOME="/usr/lib/jvm/java-11-openjdk-amd64"
+        echo "export JAVA_HOME=$JAVA_HOME" | sudo tee -a /etc/profile
+        echo "export PATH=\$PATH:\$JAVA_HOME/bin" | sudo tee -a /etc/profile
+        echo "Actualizando el entorno global para Linux/macOS..."
+        source /etc/profile
+    elif [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" || "$OSTYPE" == "win32" ]]; then
+        # Para Windows
+        JAVA_HOME="/c/Program Files/Java/jdk-11"
+        echo "Configurando JAVA_HOME para Windows..."
+        reg add "HKCU\Environment" /v JAVA_HOME /t REG_SZ /d "$JAVA_HOME" /f
+        reg add "HKCU\Environment" /v Path /t REG_EXPAND_SZ /d "%JAVA_HOME%\\bin" /f
+        echo "Actualizando el entorno para Windows..."
+        source ~/.bashrc
+    else
+        echo "No se pudo configurar las variables de entorno. Sistema operativo no reconocido."
+        exit 1
+    fi
+}
 
-# verificamos si ya esta instlado
+# Verificar si Java ya está instalado
 check_java_installed
 if [ $? -eq 0 ]; then
-    read -p " ¿Quieres reinstalar Java? (y/n): " REINSTALL
+    read -p "¿Quieres reinstalar Java? (y/n): " REINSTALL
     if [ "$REINSTALL" != "y" ]; then
-        echo "Finalizando el script, no se instalar java"
+        echo "Finalizando el script, no se instalará Java."
         exit 0
     fi
 fi
@@ -56,29 +77,14 @@ fi
 # Solicitar la ruta del instalador de Java si no está instalado o si el usuario desea reinstalar
 requestJavaInstallerPath
 
-# Instalador Java usando el instlador proporcionado por el usuario
-echo "Instalando Java ..."
+# Instalar Java usando el instalador proporcionado por el usuario
+echo "Instalando Java..."
 "$JAVA_INSTALLER_PATH" /s
 
+# Configurar las variables de entorno según el sistema operativo
+configure_environment
 
-# Definir la variable JAVA_HOME y agregarla a las variables de entorno del sistema
-echo "Configurando JAVA_HOME..."
-JAVA_HOME="/c/Program Files/Java/jdk-11"
-
-# Usar reg.exe para escribir en el registro de Windows las variables de entorno del sistema
-echo "Configurando variables de entorno..."
-
-# Agregar JAVA_HOME
-reg add "HKCU\Environment" /v JAVA_HOME /t REG_SZ /d "$JAVA_HOME" /f
-
-# Agregar el bin de Java al PATH
-reg add "HKCU\Environment" /v Path /t REG_EXPAND_SZ /d "%JAVA_HOME%\\bin" /f
-
-# Actualizar el entorno para que los cambios sean inmediatos
-echo "Actualizando las variables de entorno..."
-source ~/.bashrc
-
-# Verificar la instalación final
+# Verificar la instalación final de Java
 echo "Verificando la instalación de Java..."
 java -version
 
