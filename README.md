@@ -24,6 +24,7 @@ Antes de ejecutar los scripts, es necesario otorgarles permisos de ejecución. P
 chmod +x instalJava.sh instalMVN.sh
 
 ---
+```
 
 ### Cambios y mejoras:
 
